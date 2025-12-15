@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Laporan Hasil Evaluasi Kompetensi Operator</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 16px;
+      margin: 0;
+      background: #f2f2f2;
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .input-box {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 180px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 10px 14px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background: #4285f4;
+      color: white;
+      border-radius: 6px;
+    }
+
+    button:hover {
+      background: #3367d6;
+    }
+
+    #btnDownload {
+      background: #34a853;
+    }
+
+    #btnDownload:hover {
+      background: #1e7c3b;
+    }
+
+    iframe {
+      width: 100%;
+      height: 75vh;
+      border: 1px solid #aaa;
+      background: white;
+      border-radius: 6px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      input {
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      iframe {
+        height: 70vh;
+      }
+    }
+
+    /* ============================
+       LOADING SPINNER RESPONSIVE
+       ============================ */
+    #loading {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(3px);
+      z-index: 9999;
+
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .spinner {
+      width: 70px;
+      height: 70px;
+      border: 8px solid #d9d9d9;
+      border-top: 8px solid #4285f4;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Laporan Hasil Evaluasi Kompetensi Operator</h2>
+
+<div class="input-box">
+  <input id="nrp" placeholder="Masukkan NRP">
+  <button onclick="render()">Tampilkan</button>
+  <button onclick="downloadPDF()" id="btnDownload" style="display:none;">Download PDF</button>
+</div>
+
+<div style="color: red; text-align: center;"">
+    *Setelah klik Tampilkan, klik tombol buka yang ada dibawah (bagi pengguna Handphone) 
+</div>
+
+<iframe id="laporan"></iframe>
+
+<!-- ============================
+     LOADING OVERLAY
+     ============================ -->
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Mengambil data...</div>
+</div>
+
+<script>
+let currentBase64 = "";
+
+function showLoading() {
+  document.getElementById("loading").style.display = "flex";
+}
+
+function hideLoading() {
+  document.getElementById("loading").style.display = "none";
+}
+
+function render() {
+  const nrp = document.getElementById("nrp").value.trim();
+  if (!nrp) {
+    alert("Masukkan NRP dulu!");
+    return;
+  }
+
+  showLoading();
+
+  fetch("https://script.google.com/macros/s/AKfycbzbMnfralg5S6bP5vVnrGah6Uv1ICG4Ih70kgDbgdoVFdTwAMpb6iOqSRMJsXmOClmLzA/exec?nrp=" + nrp)
+    .then(resp => resp.text())
+    .then(base64 => {
+      currentBase64 = base64;
+      document.getElementById("laporan").src = "data:application/pdf;base64," + base64;
+      document.getElementById("btnDownload").style.display = "inline-block";
+    })
+    .catch(err => {
+      alert("Fetch gagal: " + err.message);
+    })
+    .finally(() => {
+      hideLoading();
+    });
+}
+
+function downloadPDF() {
+  if (!currentBase64) return;
+
+  const nrp = document.getElementById("nrp").value.trim();
+  const a = document.createElement("a");
+  a.href = "data:application/pdf;base64," + currentBase64;
+  a.download = nrp ? `Laporan-${nrp}.pdf` : "Laporan.pdf";
+  a.click();
+}
+</script>
+
+</body>
+</html>
