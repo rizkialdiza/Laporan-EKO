@@ -167,7 +167,7 @@ function render() {
 
   showLoading();
 
-  fetch("https://script.google.com/macros/s/AKfycbxYO1L4sNQbM_GCWPGDBlsKufEP1rS-sDp6MXZyym1EOhuyFZMmvysXVGOVuaHPcEhRgQ/exec?nrp=" + nrp)
+  fetch("https://script.google.com/macros/s/AKfycbzXCja398iPHKay4NWpMYFD6tjuSU5SEaymwUSbXl1xegdX87fc2PRdxir5XQ19kK43/exec?nrp=" + nrp)
     .then(resp => resp.text())
     .then(base64 => {
       currentBase64 = base64;
@@ -195,4 +195,3 @@ function downloadPDF() {
 
 </body>
 </html>
-
